@@ -3,7 +3,7 @@
 const express = require('express')
 const app = express();
 const MongoClient = require('mongodb').MongoClient;
-
+const ObjectId = require('mongodb').ObjectId
 const cors=require('cors');
 const bodyParser=require('body-parser')
 require('dotenv').config();
@@ -24,7 +24,9 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 client.connect(err => {
 console.log('err',err);
   const serviceCollection = client.db("cleanerhub").collection("cleanerhub123");
-   console.log('db conneted ');
+  const reviewCollection=client.db("cleanerhub").collection("reviews");
+  const orderCollection=client.db("cleanerhub").collection("orders");
+  console.log('db conneted ');
    app.post('/addService',(req,res)=>{
 
     const newService=req.body;
@@ -35,7 +37,15 @@ console.log('err',err);
       res.send(result.insertedCount >0)
     })
   })
-
+ 
+  app.get('/service/:id', (req, res) => {
+    console.log(req.params.id);
+    serviceCollection.find({_id:ObjectId(req.params.id)})
+    .toArray((err,items)=>{
+      res.send(items)
+      console.log('from database',items);
+    })
+  })
 
   app.get('/services', (req, res) => {
     serviceCollection.find()
@@ -44,9 +54,35 @@ console.log('err',err);
       console.log('from database',items);
     })
   })
+  app.get('/reviews', (req, res) => {
+    reviewCollection.find()
+    .toArray((err,items)=>{
+      res.send(items)
+      console.log('from database',items);
+    })
+  })
   
+  app.post('/addReview',(req,res)=>{
+
+    const newReview=req.body;
+    console.log('adding new book', newReview);
+    reviewCollection.insertOne(newReview)
+    .then(result=>{
+      console.log('insertedCount',result.insertedCount);
+      res.send(result.insertedCount >0)
+    })
+  })
   
-  
+  app.post('/addOrder',(req,res)=>{
+
+    const newOrder=req.body;
+    console.log('adding new book', newOrder);
+    orderCollection.insertOne(newOrder)
+    .then(result=>{
+      console.log('insertedCount',result.insertedCount);
+      res.send(result.insertedCount >0)
+    })
+  })
 
  
 
