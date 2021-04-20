@@ -26,6 +26,7 @@ console.log('err',err);
   const serviceCollection = client.db("cleanerhub").collection("cleanerhub123");
   const reviewCollection=client.db("cleanerhub").collection("reviews");
   const orderCollection=client.db("cleanerhub").collection("orders");
+  const listCollection=client.db("cleanerhub").collection("list");
   console.log('db conneted ');
    app.post('/addService',(req,res)=>{
 
@@ -74,9 +75,29 @@ console.log('err',err);
       res.send(result.insertedCount >0)
     })
   })
+
+  app.post('/addList',(req,res)=>{
+
+    const newList=req.body;
+    console.log('adding new book', newList);
+    listCollection.insertOne(newList)
+    .then(result=>{
+      console.log('insertedCount',result.insertedCount);
+      res.send(result.insertedCount >0)
+    })
+  })
+  
   
     app.get('/orders', (req, res) => {
     reviewCollection.find()
+    .toArray((err,items)=>{
+      res.send(items)
+      console.log('from database',items);
+    })
+  })
+
+  app.get('/list', (req, res) => {
+    listCollection.find()
     .toArray((err,items)=>{
       res.send(items)
       console.log('from database',items);
