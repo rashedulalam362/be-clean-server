@@ -62,6 +62,8 @@ console.log('err',err);
     })
   })
   
+
+
   app.post('/addReview',(req,res)=>{
 
     const newReview=req.body;
@@ -73,6 +75,14 @@ console.log('err',err);
     })
   })
   
+    app.get('/orders', (req, res) => {
+    reviewCollection.find()
+    .toArray((err,items)=>{
+      res.send(items)
+      console.log('from database',items);
+    })
+  })
+
   app.post('/addOrder',(req,res)=>{
 
     const newOrder=req.body;
